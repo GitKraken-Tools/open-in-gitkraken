@@ -1,6 +1,3 @@
-
-
-
 $( document ).ready(function() {
     render();
 });
@@ -10,12 +7,8 @@ async function render() {
     const repoUrl = modal.find(' > li:first-of-type input[data-autoselect]')[0].value;
     const user = repoUrl.split('/')[3];
     const repo = repoUrl.split('/')[4].replace('.git', '');
-    const commits = await axios(`https://api.github.com/repos/${user}/${repo}/commits?per_page=9999999`).then(i => i.data);
-    const sha = commits[commits.length - 1].sha;
-    console.log('commits', commits);
-    if (commits && commits.length >= 1) {
-        modal.find(' > li:nth-last-child(1)').before(link(repoUrl, sha));
-    }
+    const sha = await fetch(user, repo);
+    if (sha) { modal.find(' > li:nth-last-child(1)').before(link(repoUrl, sha)); }
 }
 
 const link = (repo, sha) => {
