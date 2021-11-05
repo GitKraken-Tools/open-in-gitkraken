@@ -22,7 +22,7 @@
     },
     {
       "matches":["https://github.com/*"],
-      "js":["gh/jquery-3.6.0.min.js", "gh/content.js"],
+      "js":["gh/jquery-3.6.0.min.js", "gh/axios-0.24.0.min.js", "gh/content.js"],
       "css": ["gh/content.css"],
       "run_at": "document_end"
     }
