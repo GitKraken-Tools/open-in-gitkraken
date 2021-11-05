@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "Open In GitKraken",
+  "short_name": "Open in GK",
+  "description": "Open the selected git URL link in GitKraken",
+  "version": "1.0.0",
+  "minimum_chrome_version": "38",
+  "permissions": [
+    "contextMenus", 
+    "tabs"],
+  "icons": {
+    "16": "assets/keif.png",
+    "48": "assets/keif.png",
+    "128": "assets/keif.png"
+  },
+  "background": {"page": "background.html"}
+}
