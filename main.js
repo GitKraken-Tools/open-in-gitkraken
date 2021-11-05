@@ -2,7 +2,7 @@ var cmid;
 
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
   if (msg.request === 'updateContextMenu') {
-    msg.selection.indexOf('.git') !== -1 ? add() : remove();
+    (msg.selection.indexOf('.git') !== -1) && msg.selection.split(' ').length === 1 ? add() : remove();
   }
 });
 
