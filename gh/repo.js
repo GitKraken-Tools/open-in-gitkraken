@@ -7,8 +7,9 @@ async function fetch(user, repo) {
 
 async function getCommits(repo) {
     const date = new Date(repo.created_at);
-    const until = new Date(date.getTime() + 10000);
-    const since = new Date(date.getTime() - 10000);
+    const until = new Date(date.getTime() + 86400000);
+    const since = new Date(date.getTime() - 86400000);
     const commits = await axios(`https://api.github.com/repos/${repo.full_name}/commits?since=${since.toISOString()}&until=${until.toISOString()}`).then(i => i.data);
-    return commits[0].sha;
+    if (commits.length === 0) { return null; }
+    return commits[commits.length - 1].sha;
 }
