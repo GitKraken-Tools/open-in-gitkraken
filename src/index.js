@@ -1,7 +1,3 @@
-$( document ).ready(function() {
-    render();
-});
-
 const render = async () => {
     const modal = $("div").find(`[data-target='get-repo.modal']`).find('ul'); // The clone dropdown element
     const repoUrl = modal.find(' > li:first-of-type input[data-autoselect]')[0].value; // The copy link
@@ -13,7 +9,7 @@ const render = async () => {
 }
 
 const fetch = async (user, repo, numCommits) => {
-    const commits = await axios(`https://api.github.com/repos/${user}/${repo}/commits?per_page=1&page=${numCommits}`).then(i => i.data);
+    const commits = await axios(`https://api.github.com/repos/${user}/${repo}/commits?per_page=1&page=${numCommits}`).catch(e => ({data: []})).then(i => i.data);
     if (commits.length === 0) { return null; }
     return commits[commits.length - 1].sha || null;
 }
@@ -27,3 +23,4 @@ const createLink = (repo, sha) => {
     </li>`
 }
 
+render();
