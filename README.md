@@ -16,7 +16,7 @@ Then, download and extract this project to a folder on your computer, and import
 
 ## Usage
 
-Install the extension and open GitHub to a **public** repository (private repos are not currently supported, see [issue](https://github.com/kyjus25/chrome-open-in-gk/issues/3). The extension will generate a GitKraken deep link for the repository and inject a button in the "clone" dropdown to open or clone the repository directly with GitKraken!
+Install the extension and open GitHub to a **public** repository (private repos are not currently supported, see [issue](https://github.com/kyjus25/chrome-open-in-gk/issues/3)). The extension will generate a GitKraken deep link for the repository and inject a button in the "clone" dropdown to open or clone the repository directly with GitKraken!
 
 <img src="./assets/dropdown.png" width="300" height="auto">
 
