@@ -14,13 +14,20 @@
     "48": "assets/keif.png",
     "128": "assets/keif.png"
   },
+  "permissions": [
+    "identity",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "src/auth/background.js"
+  },
   "content_scripts": [
     {
       "matches":["https://github.com/*/*"],
       "js":[
         "vendor/jquery-3.6.0.min.js", 
         "vendor/axios-0.24.0.min.js", 
-        "src/index.js"
+        "src/github/index.js"
       ],
       "css": [],
       "run_at": "document_end"
