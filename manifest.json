@@ -18,8 +18,6 @@
     {
       "matches":["https://github.com/*/*"],
       "js":[
-        "vendor/jquery-3.6.0.min.js", 
-        "vendor/axios-0.24.0.min.js", 
         "src/index.js"
       ],
       "css": [],
