@@ -3,7 +3,7 @@ const render = async () => {
     const repoUrl = Array.from(modal.children).find(elem => elem.matches('li:first-of-type')).querySelector('input[data-autoselect]').value; // The copy link
     const user = repoUrl.split('/')[3]; // Extract the user from the link
     const repo = repoUrl.split('/')[4].replace('.git', ''); // Extract the repo name from the link
-    const numCommits = document.querySelector('svg.octicon-history').nextElementSibling.querySelector('strong').textContent().replace(',', ''); // Extract the number of commits in the repo
+    const numCommits = document.querySelector('svg.octicon-history').nextElementSibling.querySelector('strong').textContent.replace(',', ''); // Extract the number of commits in the repo
     const sha = await getFirstCommit(user, repo, numCommits); // Fetch the first commit
     if (sha) { Array.from(modal.children).findLast(elem => elem.matches('li:nth-last-child(1)')).insertAdjacentHTML('beforebegin', createLink(repoUrl, sha)); } // Show the button if the commit was found
 };
