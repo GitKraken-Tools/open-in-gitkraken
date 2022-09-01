@@ -1,0 +1,24 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "kyjus25",
+      "name": "Justin White",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6710794?v=4",
+      "profile": "http://justinwhite.info",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "chrome-open-in-gk",
+  "projectOwner": "kyjus25",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
