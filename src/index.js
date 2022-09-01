@@ -1,5 +1,5 @@
 const render = async () => {
-    const modal = document.querySelector('div [data-target=get-repo.modal] ul'); // The clone dropdown element
+    const modal = document.querySelector('div [data-target="get-repo.modal"] ul'); // The clone dropdown element
     const repoUrl = Array.from(modal.children).find(elem => elem.matches('li:first-of-type')).querySelector('input[data-autoselect]').value; // The copy link
     const user = repoUrl.split('/')[3]; // Extract the user from the link
     const repo = repoUrl.split('/')[4].replace('.git', ''); // Extract the repo name from the link
