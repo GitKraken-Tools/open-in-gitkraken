@@ -1,11 +1,14 @@
 {
-  "manifest_version": 2,
   "name": "Open In GitKraken",
-  "short_name": "Open in GK",
   "description": "Open public GitHub repositories in GitKraken",
+  "manifest_version": 3,
   "version": "1.0.0",
-  "minimum_chrome_version": "38",
-  "web_accessible_resources": ["assets/keif-dark.png"],
+  "web_accessible_resources": [
+    {
+      "resources": [ "assets/keif-dark.png" ],
+      "matches": [ "https://github.com/*" ]
+    }
+  ],
   "icons": {
     "16": "assets/keif.png",
     "48": "assets/keif.png",
@@ -14,8 +17,12 @@
   "content_scripts": [
     {
       "matches":["https://github.com/*/*"],
-      "js":["gh/jquery-3.6.0.min.js", "gh/axios-0.24.0.min.js", "gh/repo.js", "gh/content.js"],
-      "css": ["gh/content.css"],
+      "js":[
+        "vendor/jquery-3.6.0.min.js", 
+        "vendor/axios-0.24.0.min.js", 
+        "src/index.js"
+      ],
+      "css": [],
       "run_at": "document_end"
     }
   ]
