@@ -9,6 +9,7 @@
 ⚡ Navigate to or clone repositories in a jiffy using GitKraken's [deep link API](https://help.gitkraken.com/gitkraken-client/linking)
 
 <h3>Table of Contents</h3>
+
 - [Browser support 🤝](#browser-support-)
 - [Installation 🏁](#installation-)
 - [Usage 🦑](#usage-)
