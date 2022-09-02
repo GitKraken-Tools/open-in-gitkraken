@@ -10,16 +10,16 @@
     }
   ],
   "icons": {
-    "16": "assets/keif.png",
-    "48": "assets/keif.png",
-    "128": "assets/keif.png"
+    "16": "assets/icon_16.png",
+    "32": "assets/icon_32.png",
+    "48": "assets/icon_48.png",
+    "64": "assets/icon_64.png",
+    "128": "assets/icon_128.png"
   },
   "content_scripts": [
     {
       "matches":["https://github.com/*/*"],
       "js":[
-        "vendor/jquery-3.6.0.min.js", 
-        "vendor/axios-0.24.0.min.js", 
         "src/index.js"
       ],
       "css": [],
