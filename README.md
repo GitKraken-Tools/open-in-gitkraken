@@ -1,12 +1,30 @@
-<img src="./assets/readme-art.png" width="100%" height="auto">
+<img src="./assets/readme-banner.png" />
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-✨)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-# Open in GitKraken <img src="./assets/icon_128.png" height="30" > - Chrome Extension
+# Open in GitKraken 🐙+🦑=⚡️
 
-⚡ Clone repositories in a jiffy using GitKraken's [deep link API](https://help.gitkraken.com/gitkraken-client/linking)
+⚡ Navigate to or clone repositories in a jiffy using GitKraken's [deep link API](https://help.gitkraken.com/gitkraken-client/linking)
+
+### Table of Contents
+- [Browser support 🤝](#browser-support-🤝)
+- [Installation 🏁](#installation-🏁)
+- [Usage 🦑](#usage-🦑)
+- [Contributors ✨](#contributors-✨)
+
+---
+
+## Browser support 🤝
+
+![Chrome](./assets/browser-logos/chrome.png) | ![Brave](./assets/browser-logos/brave.png) | ![Microsoft Edge](./assets/browser-logos/edge.png) | ![Firefox](./assets/browser-logos/firefox.png) | ![Safari](./assets/browser-logos/safari.png)
+:-: | :-: | :-: | :-: | :-: |
+✅ | ✅ | ✅ | ❌ | ❌ |
+
+>**Chrome**, **Brave**, and **Edge** all support the Chrome extension but as it is still in alpha and not in the Chrome Web Store, manual installation will be required.
+>
+>Support for **Firefox** and **Safari** coming soon.
 
 ## Installation 🏁
 
