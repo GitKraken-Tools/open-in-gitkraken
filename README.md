@@ -4,17 +4,17 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-# Open in GitKraken 🐙 - Chrome Extension
+# Open in GitKraken <img src="./assets/icon_128.png" height="30" > - Chrome Extension
 
 ⚡ Clone repositories in a jiffy using GitKraken's [deep link API](https://help.gitkraken.com/gitkraken-client/linking)
 
-## Installation
+## Installation 🏁
 
 The extension is not currently in the Chrome Web Store as it is still in alpha. To install it manually, open your chrome extensions tab at `chrome://extensions/` and enable developer mode.
 
 Then, download and extract this project to a folder on your computer, and import the folder with the "Load Unpacked" button in the extensions page.
 
-## Usage
+## Usage 🦑
 
 Install the extension and open GitHub to a **public** repository (private repos are not currently supported, see [issue](https://github.com/kyjus25/chrome-open-in-gk/issues/3)). The extension will generate a GitKraken deep link for the repository and inject a button in the "clone" dropdown to open or clone the repository directly with GitKraken!
 
