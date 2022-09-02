@@ -1,18 +1,18 @@
 <img src="./assets/readme-banner.png" />
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-✨)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-# Open in GitKraken 🐙+🦑=⚡️
+<h1>Open in GitKraken 🐙+🦑=⚡️</h1>
 
 ⚡ Navigate to or clone repositories in a jiffy using GitKraken's [deep link API](https://help.gitkraken.com/gitkraken-client/linking)
 
-### Table of Contents
-- [Browser support 🤝](#browser-support-🤝)
-- [Installation 🏁](#installation-🏁)
-- [Usage 🦑](#usage-🦑)
-- [Contributors ✨](#contributors-✨)
+<h3>Table of Contents</h3>
+- [Browser support 🤝](#browser-support-)
+- [Installation 🏁](#installation-)
+- [Usage 🦑](#usage-)
+- [Contributors ✨](#contributors-)
 
 ---
 
