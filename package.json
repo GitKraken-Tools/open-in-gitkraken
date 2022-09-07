@@ -32,6 +32,7 @@
     "typescript": "^4.8.2"
   },
   "dependencies": {
+    "@types/chrome": "^0.0.196",
     "pushstate-js": "^1.0.8"
   }
 }

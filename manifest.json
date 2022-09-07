@@ -16,6 +16,14 @@
     "64": "assets/icon_64.png",
     "128": "assets/icon_128.png"
   },
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches":["https://github.com/*/*"],
