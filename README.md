@@ -1,10 +1,7 @@
 <img src="./assets/readme-banner.png" />
 
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![Build Status](https://github.com/GitKraken-Tools/open-in-gitkraken/actions/workflows/build.yml/badge.svg)](./actions)
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-
-<img src="https://github.com/GitKraken-Tools/open-in-gitkraken/actions/workflows/build.yml/badge.svg" style="max-width: 100%;">
 
 <h1>Open in GitKraken 🐙+🦑=⚡️</h1>
 
