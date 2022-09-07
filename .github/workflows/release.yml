@@ -5,6 +5,7 @@ on:
       - "v*"
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -19,7 +20,7 @@ jobs:
     - run: npm ci
     - run: npm run build
     - name: Archive dist artifacts
-    - uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v3
       with:
         name: dist
         path: |
@@ -32,9 +33,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
-      - name: "Release"
-        run: |
-          echo "Done!"
+      - name: Release
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
