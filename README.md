@@ -4,6 +4,8 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+<img src="https://github.com/GitKraken-Tools/open-in-gitkraken/actions/workflows/build.yml/badge.svg" style="max-width: 100%;">
+
 <h1>Open in GitKraken 🐙+🦑=⚡️</h1>
 
 ⚡ Navigate to or clone repositories in a jiffy using GitKraken's [deep link API](https://help.gitkraken.com/gitkraken-client/linking)
