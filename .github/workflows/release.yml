@@ -1,9 +1,8 @@
-name: "build"
+name: "release"
 on:
   push:
-    branches: [ "feat/actions" ]
-  pull_request:
-    branches: [ "feat/actions" ]
+    tags:
+      - "v*"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,3 +24,21 @@ jobs:
           name: dist
           path: |
             dist
+  release:
+    name: "Release"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+      - name: "Release"
+        run: |
+          echo "Done!"
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            dist/*
+            manifest.json
