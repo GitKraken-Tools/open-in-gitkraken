@@ -20,7 +20,7 @@
     {
       "matches":["https://github.com/*/*"],
       "js":[
-        "src/index.js"
+        "dist/index.js"
       ],
       "css": [],
       "run_at": "document_end"
