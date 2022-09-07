@@ -19,11 +19,11 @@ jobs:
     - run: npm ci
     - run: npm run build
     - name: Archive dist artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: |
-            dist
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: |
+          dist
   release:
     name: "Release"
     runs-on: "ubuntu-latest"
