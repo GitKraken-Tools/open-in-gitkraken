@@ -1,7 +1,7 @@
 <img src="./assets/readme-banner.png" />
 
 [![Build Status](https://github.com/GitKraken-Tools/open-in-gitkraken/actions/workflows/build.yml/badge.svg)](./actions)
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg)](#contributors-)
 
 <h1>Open in GitKraken 🐙+🦑=⚡️</h1>
 
