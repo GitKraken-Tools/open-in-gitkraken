@@ -3,11 +3,13 @@ import waitForElement from './waitForElement.js';
 import getGkLogo from './getGkLogo.js';
 
 const dropdownLinkClass = 'gk-link';
+const alreadyInjected = (): boolean => document.getElementsByClassName(dropdownLinkClass).length > 0;
 
 let cancelRender: (() => void) | undefined = undefined;
 
 const render = async () => {
-  if (document.querySelector(`.${dropdownLinkClass}`)) return; // don't render if already rendered
+  if (alreadyInjected()) return;
+  console.log();
   if (typeof cancelRender === 'function') cancelRender(); // Cancel the current render process if it's still running
   const controller = new AbortController(); // Create a new controller for this render process
   cancelRender = () => controller.abort(); // Set the cancelRender function to abort the new controller
@@ -26,7 +28,7 @@ const render = async () => {
   const sha = await getFirstCommit(user, repo, numCommits, controller); // Fetch the first commit
   if (sha) {
     const secondFromLast = modalChildren.reverse().find(elem => elem.matches('li:nth-last-child(1)'));
-    if (!secondFromLast || secondFromLast.classList.contains(dropdownLinkClass)) return; // If the link was already added, abort
+    if (!secondFromLast || alreadyInjected()) return; // If the link was already added, abort
     secondFromLast.insertAdjacentHTML('beforebegin', createLink(repoUrl, sha));
   }
 };
