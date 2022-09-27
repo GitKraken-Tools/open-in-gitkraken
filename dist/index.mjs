@@ -145,11 +145,13 @@ var getGkLogo_default = getGkLogo;
 
 // src/index.ts
 var dropdownLinkClass = "gk-link";
+var alreadyInjected = () => document.getElementsByClassName(dropdownLinkClass).length > 0;
 var cancelRender = void 0;
 var render = async () => {
   var _a, _b, _c, _d, _e;
-  if (document.querySelector(`.${dropdownLinkClass}`))
+  if (alreadyInjected())
     return;
+  console.log();
   if (typeof cancelRender === "function")
     cancelRender();
   const controller = new AbortController();
@@ -168,7 +170,7 @@ var render = async () => {
   const sha = await getFirstCommit(user, repo, numCommits, controller);
   if (sha) {
     const secondFromLast = modalChildren.reverse().find((elem) => elem.matches("li:nth-last-child(1)"));
-    if (!secondFromLast || secondFromLast.classList.contains(dropdownLinkClass))
+    if (!secondFromLast || alreadyInjected())
       return;
     secondFromLast.insertAdjacentHTML("beforebegin", createLink(repoUrl, sha));
   }
