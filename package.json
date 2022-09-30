@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@types/chrome": "^0.0.196",
+    "github-url-detection": "^6.1.0",
     "pushstate-js": "^1.0.8"
   }
 }
