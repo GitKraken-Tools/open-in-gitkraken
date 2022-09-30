@@ -1,103 +1,37 @@
 // src/contextmenu.ts
 var import_github_url_detection = require("github-url-detection");
 var { getRepositoryInfo: getRepo } = import_github_url_detection.utils;
+var isBranch = (url) => {
+  return !(0, import_github_url_detection.isRepoHome)(url) && (0, import_github_url_detection.isRepoRoot)(url);
+};
+var prefix = "gitkraken://repolink/";
 var firstCommit = "first_commit_here";
+var _a;
+var suffix = `?url=${encodeURIComponent((_a = document.querySelector('meta[name="go-import"]')) == null ? void 0 : _a.content.split(" ")[2])}`;
 var linkFormats = {
-  repo: `gitkraken://repolink/${firstCommit}?url=true`,
-  commit: (commit) => `gitkraken://repolink/${firstCommit}/commit/${commit}?url=true`,
-  branch: (branch) => `gitkraken://repolink/${firstCommit}/branch/${branch}?url=true`,
-  tag: (tag) => `gitkraken://repolink/${firstCommit}/tag/${tag}?url=true`
+  repo: `${prefix}${firstCommit}?url=${suffix}`,
+  commit: (commit) => `${prefix}${firstCommit}/commit/${commit}?url=${suffix}`,
+  branch: (branch) => `${prefix}${firstCommit}/branch/${branch}?url=${suffix}`,
+  tag: (tag) => `${prefix}${firstCommit}/tag/${tag}?url=${suffix}`
 };
-var PULL_REQUEST_PATH_REGEXP = /.+\/([^/]+)\/(pull)\/[^/]+\/(.*)/;
-var OptionValidationError = class extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "OptionValidationError";
-  }
-};
-async function getOptions() {
-  const options = await chrome.storage.sync.get({
-    remoteHost: "",
-    basePath: "",
-    debug: false
-  });
-  if (options.basePath === "") {
-    throw new OptionValidationError("Looks like you haven't configured this extension yet. You can find more information about this by visiting the extension's README page.");
-  }
-  return options;
-}
-function getGkLink({
-  repo,
-  file,
-  isFolder,
-  line
-}, {
-  remoteHost,
-  basePath,
-  debug
-}) {
-  let gkLink = "gk";
-  if (remoteHost !== "") {
-    gkLink += `://gk-remote/ssh-remote+${remoteHost}`;
-  } else {
-    gkLink += "://file";
-  }
-  if (basePath[0] !== "/") {
-    gkLink += "/";
-  }
-  gkLink += `${basePath}/${repo}/${file}`;
-  if (isFolder) {
-    gkLink += "/";
-  }
-  if (line) {
-    gkLink += `:${line}:1`;
-  }
-  if (debug) {
-    console.log(`About to open link: ${gkLink}`);
-  }
-  return gkLink;
-}
-function isPR(linkUrl) {
-  return PULL_REQUEST_PATH_REGEXP.test(linkUrl);
-}
-function parseLink(linkUrl, selectionText, pageUrl) {
-  const url = new URL(linkUrl ?? pageUrl);
-  const path = url.pathname;
-  if (isPR(url.pathname)) {
-    const pathInfo2 = PULL_REQUEST_PATH_REGEXP.exec(path);
-    const repo2 = pathInfo2[1];
-    const isFolder2 = false;
-    const file2 = selectionText;
-    let line2 = null;
-    if (pageUrl.includes(linkUrl)) {
-      line2 = pageUrl.replace(linkUrl, "").replace("R", "").replace("L", "");
-    }
-    return {
-      repo: repo2,
-      file: file2,
-      isFolder: isFolder2,
-      line: line2
+var buildLink = (url) => {
+  const { repo, commit, branch, tag } = linkFormats;
+  const info = getRepo(url ?? location);
+  let link = repo;
+  if (info && !(0, import_github_url_detection.isRepoHome)(url)) {
+    const { path } = info;
+    const builder = (fn, splitter) => {
+      return fn(path.split(splitter)[1].split(/\/|\?/)[0]);
     };
+    if (isBranch(url))
+      link = builder(branch, "/tree/");
+    else if ((0, import_github_url_detection.isCommit)(url))
+      link = builder(commit, /\/commit.*?\//);
+    else if ((0, import_github_url_detection.isSingleTag)(url))
+      link = builder(tag, "/tag/");
   }
-  const pathRegexp = /.+\/([^/]+)\/(blob|tree)\/[^/]+\/(.*)/;
-  if (!pathRegexp.test(path)) {
-    throw new Error(`Invalid link. Could not extract info from: ${path}.`);
-  }
-  const pathInfo = pathRegexp.exec(path);
-  const repo = pathInfo[1];
-  const isFolder = pathInfo[2] === "tree";
-  const file = pathInfo[3];
-  let line;
-  if (url.hash.indexOf("#L") === 0) {
-    line = url.hash.substring(2);
-  }
-  return {
-    repo,
-    file,
-    isFolder,
-    line
-  };
-}
+  return link;
+};
 async function getCurrentTab() {
   const queryOptions = { active: true, lastFocusedWindow: true };
   const [tab] = await chrome.tabs.query(queryOptions);
@@ -109,7 +43,7 @@ function injectedAlert(message) {
 function injectedWindowOpen(url) {
   window.open(url);
 }
-async function openInGk({ linkUrl, selectionText, pageUrl }) {
+async function openInGk({ linkUrl, pageUrl }) {
   let tab;
   try {
     tab = await getCurrentTab();
@@ -119,9 +53,8 @@ async function openInGk({ linkUrl, selectionText, pageUrl }) {
     return;
   }
   try {
-    const options = await getOptions();
-    const parsedLinkData = parseLink(linkUrl, selectionText, pageUrl);
-    const url = getGkLink(parsedLinkData, options);
+    const parsedLinkData = new URL(linkUrl ?? pageUrl);
+    const url = buildLink(parsedLinkData);
     await chrome.scripting.executeScript(
       {
         target: { tabId: tab.id },
@@ -150,10 +83,10 @@ chrome.contextMenus.create({
   contexts: ["link", "page"]
 });
 chrome.contextMenus.onClicked.addListener(({ menuItemId, ...info }) => {
-  if (menuItemId !== contextMenuId) {
+  if (menuItemId !== contextMenuId)
     return;
-  }
-  openInGk(info);
+  const { linkUrl, pageUrl } = info;
+  openInGk({ linkUrl, pageUrl });
 });
 chrome.action.onClicked.addListener(({ url }) => {
   openInGk({ linkUrl: url, pageUrl: url });

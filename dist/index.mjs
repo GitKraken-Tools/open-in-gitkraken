@@ -193,4 +193,7 @@ var createLink = (repo, sha, commit = "") => {
 (0, import_pushstate_js.default)();
 render();
 window.addEventListener("pushstate", render);
+export {
+  getFirstCommit
+};
 //# sourceMappingURL=index.mjs.map

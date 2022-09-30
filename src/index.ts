@@ -33,7 +33,7 @@ const render = async () => {
   }
 };
 
-const getFirstCommit = async (user: string, repo: string, numCommits: number, controller: AbortController) => {
+export const getFirstCommit = async (user: string, repo: string, numCommits: number, controller: AbortController) => {
   if (numCommits === 0) { return null; }
   const fetchUrl = `https://api.github.com/repos/${user}/${repo}/commits?per_page=1&page=${numCommits}`;
   return await fetch(fetchUrl, { signal: controller.signal })

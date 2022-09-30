@@ -14,13 +14,15 @@ const isBranch = (url) => {
   return !isRepoHome(url) && isRepoRoot(url);
 }
 
+const prefix = 'gitkraken://repolink/';
 const firstCommit = 'first_commit_here';
+const suffix = `?url=${encodeURIComponent((document.querySelector('meta[name="go-import"]') as HTMLMetaElement)?.content.split(' ')[2])}`;
 
 const linkFormats = {
-  repo: `gitkraken://repolink/${firstCommit}?url=true`,
-  commit: (commit) => `gitkraken://repolink/${firstCommit}/commit/${commit}?url=true`,
-  branch: (branch) => `gitkraken://repolink/${firstCommit}/branch/${branch}?url=true`,
-  tag: (tag) => `gitkraken://repolink/${firstCommit}/tag/${tag}?url=true`,
+  repo: `${prefix}${firstCommit}?url=${suffix}`,
+  commit: (commit) => `${prefix}${firstCommit}/commit/${commit}?url=${suffix}`,
+  branch: (branch) => `${prefix}${firstCommit}/branch/${branch}?url=${suffix}`,
+  tag: (tag) => `${prefix}${firstCommit}/tag/${tag}?url=${suffix}`,
 };
 
 const buildLink = (url: URL | Location | HTMLAnchorElement | undefined) => {
@@ -39,117 +41,6 @@ const buildLink = (url: URL | Location | HTMLAnchorElement | undefined) => {
   return link;
 };
 
-const PULL_REQUEST_PATH_REGEXP = /.+\/([^/]+)\/(pull)\/[^/]+\/(.*)/;
-
-class OptionValidationError extends Error {
-    constructor(message) {
-        super(message);
-        this.name = 'OptionValidationError';
-    }
-}
-
-async function getOptions() {
-    const options = await chrome.storage.sync.get({
-        remoteHost: '',
-        basePath: '',
-        debug: false,
-    });
-
-    if (options.basePath === '') {
-        throw new OptionValidationError('Looks like you haven\'t configured this extension yet. You can find more information about this by visiting the extension\'s README page.');
-    }
-
-    return options;
-}
-
-function getGkLink({
-    repo, file, isFolder, line,
-}, {
-    remoteHost, basePath, debug,
-}) {
-    let gkLink = 'gk';
-
-    if (remoteHost !== '') {
-        gkLink += `://gk-remote/ssh-remote+${remoteHost}`;
-    } else {
-        gkLink += '://file';
-    }
-
-    // windows paths don't start with slash
-    if (basePath[0] !== '/') {
-        gkLink += '/';
-    }
-
-    gkLink += `${basePath}/${repo}/${file}`;
-
-    // opening a folder and not a file
-    if (isFolder) {
-        gkLink += '/';
-    }
-
-    if (line) {
-        gkLink += `:${line}:1`;
-    }
-
-    if (debug) {
-        // eslint-disable-next-line no-console
-        console.log(`About to open link: ${gkLink}`);
-    }
-
-    return gkLink;
-}
-
-function isPR(linkUrl) {
-    return PULL_REQUEST_PATH_REGEXP.test(linkUrl);
-}
-
-function parseLink(linkUrl, selectionText, pageUrl) {
-    const url = new URL(linkUrl ?? pageUrl);
-    const path = url.pathname;
-
-    if (isPR(url.pathname)) {
-        const pathInfo = PULL_REQUEST_PATH_REGEXP.exec(path);
-        const repo = pathInfo[1];
-        const isFolder = false;
-        const file = selectionText;
-        let line = null;
-        if (pageUrl.includes(linkUrl)) {
-            line = pageUrl.replace(linkUrl, '').replace('R', '').replace('L', '');
-        }
-        return {
-            repo,
-            file,
-            isFolder,
-            line,
-        };
-    }
-
-    const pathRegexp = /.+\/([^/]+)\/(blob|tree)\/[^/]+\/(.*)/;
-
-    if (!pathRegexp.test(path)) {
-        throw new Error(`Invalid link. Could not extract info from: ${path}.`);
-    }
-
-    const pathInfo = pathRegexp.exec(path);
-
-    const repo = pathInfo[1];
-    const isFolder = pathInfo[2] === 'tree';
-    const file = pathInfo[3];
-
-    let line;
-
-    if (url.hash.indexOf('#L') === 0) {
-        line = url.hash.substring(2);
-    }
-
-    return {
-        repo,
-        file,
-        isFolder,
-        line,
-    };
-}
-
 async function getCurrentTab() {
     const queryOptions = { active: true, lastFocusedWindow: true };
     const [tab] = await chrome.tabs.query(queryOptions);
@@ -166,7 +57,7 @@ function injectedWindowOpen(url) {
     window.open(url);
 }
 
-async function openInGk({ linkUrl, selectionText, pageUrl }) {
+async function openInGk({ linkUrl, pageUrl }) {
     let tab;
     try {
         tab = await getCurrentTab();
@@ -179,9 +70,8 @@ async function openInGk({ linkUrl, selectionText, pageUrl }) {
     }
 
     try {
-        const options = await getOptions();
-        const parsedLinkData = parseLink(linkUrl, selectionText, pageUrl);
-        const url = getGkLink(parsedLinkData, options);
+        const parsedLinkData = new URL(linkUrl ?? pageUrl);
+        const url = buildLink(parsedLinkData);
         await chrome.scripting.executeScript(
             {
                 target: { tabId: tab.id },
@@ -214,11 +104,9 @@ chrome.contextMenus.create({
 });
 
 chrome.contextMenus.onClicked.addListener(({ menuItemId, ...info }) => {
-    if (menuItemId !== contextMenuId) {
-        return;
-    }
-
-    openInGk(info);
+    if (menuItemId !== contextMenuId) return;
+    const { linkUrl, pageUrl } = info;
+    openInGk({ linkUrl, pageUrl });
 });
 
 chrome.action.onClicked.addListener((({ url }) => {
