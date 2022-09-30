@@ -14,25 +14,33 @@ const isBranch = (url) => {
   return !isRepoHome(url) && isRepoRoot(url);
 }
 
-const getGitUrl = async (): Promise<string> => {
-  let gitUrl: string;
-  await new Promise<void>((resolve) => {
-    chrome.runtime.sendMessage(
-      { subject: 'request-git-url' },
-      (res) => gitUrl = res
-    );
-    resolve();
-  });
-  // @ts-ignore
-  return gitUrl ?? '';
-}
-
 const log = (...data: any[]) => {
   chrome.runtime.sendMessage({
     subject: 'console-log',
     payload: data,
   });
-}
+};
+
+chrome.runtime.sendMessage({
+  subject: 'console-log',
+  payload: 'test',
+});
+
+const getGitUrl = async (): Promise<string> => {
+  let gitUrl: string;
+  await new Promise<void>((resolve) => {
+    chrome.runtime.sendMessage(
+      { subject: 'request-git-url' },
+      (res) => {
+        gitUrl = res;
+        log(res);
+      },
+    );
+    resolve();
+  });
+  // @ts-ignore
+  return gitUrl ?? '';
+};
 
 const prefix = 'gitkraken://repolink/';
 const firstCommit = 'first_commit_here';

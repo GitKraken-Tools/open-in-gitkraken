@@ -360,12 +360,25 @@ var { getRepositoryInfo: getRepo2 } = utils;
 var isBranch = (url) => {
   return !isRepoHome(url) && isRepoRoot(url);
 };
+var log = (...data) => {
+  chrome.runtime.sendMessage({
+    subject: "console-log",
+    payload: data
+  });
+};
+chrome.runtime.sendMessage({
+  subject: "console-log",
+  payload: "test"
+});
 var getGitUrl = async () => {
   let gitUrl;
   await new Promise((resolve) => {
     chrome.runtime.sendMessage(
       { subject: "request-git-url" },
-      (res) => gitUrl = res
+      (res) => {
+        gitUrl = res;
+        log(res);
+      }
     );
     resolve();
   });
