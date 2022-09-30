@@ -193,7 +193,19 @@ var createLink = (repo, sha, commit = "") => {
 (0, import_pushstate_js.default)();
 render();
 window.addEventListener("pushstate", render);
-export {
-  getFirstCommit
+var getGitUrl = () => {
+  var _a;
+  return ((_a = document.querySelector('meta[name="go-import"]')) == null ? void 0 : _a.content.split(" ")[2]) ?? window.location.href ?? "";
 };
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if ((message == null ? void 0 : message.subject) !== "request-git-url")
+    return;
+  sendResponse(encodeURIComponent(getGitUrl()));
+});
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if ((message == null ? void 0 : message.subject) !== "console-log")
+    return;
+  if (message == null ? void 0 : message.payload)
+    console.log(...message.payload);
+});
 //# sourceMappingURL=index.mjs.map

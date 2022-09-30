@@ -6,7 +6,7 @@ import {
   utils,
 } from 'github-url-detection';
 
-import { getFirstCommit } from '.';
+// import { getFirstCommit } from '.';
 
 const { getRepositoryInfo: getRepo } = utils;
 
@@ -14,9 +14,34 @@ const isBranch = (url) => {
   return !isRepoHome(url) && isRepoRoot(url);
 }
 
+const getGitUrl = async (): Promise<string> => {
+  let gitUrl: string;
+  await new Promise<void>((resolve) => {
+    chrome.runtime.sendMessage(
+      { subject: 'request-git-url' },
+      (res) => gitUrl = res
+    );
+    resolve();
+  });
+  // @ts-ignore
+  return gitUrl ?? '';
+}
+
+const log = (...data: any[]) => {
+  chrome.runtime.sendMessage({
+    subject: 'console-log',
+    payload: data,
+  });
+}
+
 const prefix = 'gitkraken://repolink/';
 const firstCommit = 'first_commit_here';
-const suffix = `?url=${encodeURIComponent((document.querySelector('meta[name="go-import"]') as HTMLMetaElement)?.content.split(' ')[2])}`;
+let suffix = '';
+const buildSuffix = async () => {
+  let gitUrl = await getGitUrl();
+  return `?url=${gitUrl}`;
+};
+buildSuffix();
 
 const linkFormats = {
   repo: `${prefix}${firstCommit}?url=${suffix}`,
@@ -42,73 +67,73 @@ const buildLink = (url: URL | Location | HTMLAnchorElement | undefined) => {
 };
 
 async function getCurrentTab() {
-    const queryOptions = { active: true, lastFocusedWindow: true };
-    const [tab] = await chrome.tabs.query(queryOptions);
-    return tab;
+  const queryOptions = { active: true, lastFocusedWindow: true };
+  const [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
 }
 
 function injectedAlert(message) {
-    // eslint-disable-next-line no-undef
-    alert(message);
+  // eslint-disable-next-line no-undef
+  alert(message);
 }
 
 function injectedWindowOpen(url) {
-    // eslint-disable-next-line no-undef
-    window.open(url);
+  // eslint-disable-next-line no-undef
+  window.open(url);
 }
 
 async function openInGk({ linkUrl, pageUrl }) {
-    let tab;
-    try {
-        tab = await getCurrentTab();
-    } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error('Unexpected error');
-        // eslint-disable-next-line no-console
-        console.error(e);
-        return;
-    }
+  let tab;
+  try {
+    tab = await getCurrentTab();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Unexpected error');
+    // eslint-disable-next-line no-console
+    console.error(e);
+    return;
+  }
 
-    try {
-        const parsedLinkData = new URL(linkUrl ?? pageUrl);
-        const url = buildLink(parsedLinkData);
-        await chrome.scripting.executeScript(
-            {
-                target: { tabId: tab.id },
-                func: injectedWindowOpen,
-                args: [url],
-            },
-        );
-    } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error(e);
-        await chrome.scripting.executeScript(
-            {
-                target: { tabId: tab.id },
-                func: injectedAlert,
-                args: [e.message ?? e],
-            },
-        );
-        if (e.name === 'OptionValidationError') {
-            chrome.runtime.openOptionsPage();
-        }
+  try {
+    const parsedLinkData = new URL(linkUrl ?? pageUrl);
+    const url = buildLink(parsedLinkData);
+    await chrome.scripting.executeScript(
+      {
+        target: { tabId: tab.id },
+        func: injectedWindowOpen,
+        args: [url],
+      },
+    );
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+    await chrome.scripting.executeScript(
+      {
+        target: { tabId: tab.id },
+        func: injectedAlert,
+        args: [e.message ?? e],
+      },
+    );
+    if (e.name === 'OptionValidationError') {
+      chrome.runtime.openOptionsPage();
     }
+  }
 }
 
 const contextMenuId = 'open-in-gk-context-menu';
 
 chrome.contextMenus.create({
-    id: contextMenuId,
-    title: 'Open in VSCode',
-    contexts: ['link', 'page'],
+  id: contextMenuId,
+  title: 'Open in VSCode',
+  contexts: ['link', 'page'],
 });
 
 chrome.contextMenus.onClicked.addListener(({ menuItemId, ...info }) => {
-    if (menuItemId !== contextMenuId) return;
-    const { linkUrl, pageUrl } = info;
-    openInGk({ linkUrl, pageUrl });
+  if (menuItemId !== contextMenuId) return;
+  const { linkUrl, pageUrl } = info;
+  openInGk({ linkUrl, pageUrl });
 });
 
 chrome.action.onClicked.addListener((({ url }) => {
-    openInGk({ linkUrl: url, pageUrl: url });
+  openInGk({ linkUrl: url, pageUrl: url });
 }));

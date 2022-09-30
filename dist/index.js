@@ -7,10 +7,6 @@ var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __commonJS = (cb, mod) => function __require() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
-var __export = (target, all) => {
-  for (var name in all)
-    __defProp(target, name, { get: all[name], enumerable: true });
-};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -23,7 +19,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
-var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // node_modules/pushstate-js/dist/index.js
 var require_dist = __commonJS({
@@ -32,7 +27,7 @@ var require_dist = __commonJS({
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
     var __getOwnPropNames2 = Object.getOwnPropertyNames;
     var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __export2 = (target, all) => {
+    var __export = (target, all) => {
       for (var name in all)
         __defProp2(target, name, { get: all[name], enumerable: true });
     };
@@ -44,12 +39,12 @@ var require_dist = __commonJS({
       }
       return to;
     };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports2 = {};
-    __export2(src_exports2, {
+    var __toCommonJS = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export(src_exports, {
       default: () => src_default
     });
-    module2.exports = __toCommonJS2(src_exports2);
+    module2.exports = __toCommonJS(src_exports);
     var initializePushstateEvent2 = () => {
       const getCurrentUrl = () => {
         var _a;
@@ -78,11 +73,6 @@ var require_dist = __commonJS({
 });
 
 // src/index.ts
-var src_exports = {};
-__export(src_exports, {
-  getFirstCommit: () => getFirstCommit
-});
-module.exports = __toCommonJS(src_exports);
 var import_pushstate_js = __toESM(require_dist());
 
 // src/waitForElement.ts
@@ -203,8 +193,19 @@ var createLink = (repo, sha, commit = "") => {
 (0, import_pushstate_js.default)();
 render();
 window.addEventListener("pushstate", render);
-// Annotate the CommonJS export names for ESM import in node:
-0 && (module.exports = {
-  getFirstCommit
+var getGitUrl = () => {
+  var _a;
+  return ((_a = document.querySelector('meta[name="go-import"]')) == null ? void 0 : _a.content.split(" ")[2]) ?? window.location.href ?? "";
+};
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if ((message == null ? void 0 : message.subject) !== "request-git-url")
+    return;
+  sendResponse(encodeURIComponent(getGitUrl()));
+});
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if ((message == null ? void 0 : message.subject) !== "console-log")
+    return;
+  if (message == null ? void 0 : message.payload)
+    console.log(...message.payload);
 });
 //# sourceMappingURL=index.js.map

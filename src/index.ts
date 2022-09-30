@@ -33,7 +33,7 @@ const render = async () => {
   }
 };
 
-export const getFirstCommit = async (user: string, repo: string, numCommits: number, controller: AbortController) => {
+const getFirstCommit = async (user: string, repo: string, numCommits: number, controller: AbortController) => {
   if (numCommits === 0) { return null; }
   const fetchUrl = `https://api.github.com/repos/${user}/${repo}/commits?per_page=1&page=${numCommits}`;
   return await fetch(fetchUrl, { signal: controller.signal })
@@ -54,3 +54,15 @@ const createLink = (repo, sha, commit = '') => {
 initializePushstateEvent();
 render();
 window.addEventListener('pushstate', render);
+
+const getGitUrl = () => (document.querySelector('meta[name="go-import"]') as HTMLMetaElement)?.content.split(' ')[2] ?? window.location.href ?? '';
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message?.subject !== 'request-git-url') return;
+  sendResponse(encodeURIComponent(getGitUrl()));
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message?.subject !== 'console-log') return;
+  if (message?.payload) console.log(...message.payload);
+});
