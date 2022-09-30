@@ -1,4 +1,19 @@
 // src/contextmenu.ts
+import {
+  isRepoHome,
+  isRepoRoot,
+  isCommit,
+  isSingleTag,
+  utils
+} from "github-url-detection";
+var { getRepositoryInfo: getRepo } = utils;
+var firstCommit = "first_commit_here";
+var linkFormats = {
+  repo: `gitkraken://repolink/${firstCommit}?url=true`,
+  commit: (commit) => `gitkraken://repolink/${firstCommit}/commit/${commit}?url=true`,
+  branch: (branch) => `gitkraken://repolink/${firstCommit}/branch/${branch}?url=true`,
+  tag: (tag) => `gitkraken://repolink/${firstCommit}/tag/${tag}?url=true`
+};
 var PULL_REQUEST_PATH_REGEXP = /.+\/([^/]+)\/(pull)\/[^/]+\/(.*)/;
 var OptionValidationError = class extends Error {
   constructor(message) {
@@ -10,7 +25,6 @@ async function getOptions() {
   const options = await chrome.storage.sync.get({
     remoteHost: "",
     basePath: "",
-    insidersBuild: false,
     debug: false
   });
   if (options.basePath === "") {
@@ -18,37 +32,36 @@ async function getOptions() {
   }
   return options;
 }
-function getVscodeLink({
+function getGkLink({
   repo,
   file,
   isFolder,
   line
 }, {
   remoteHost,
-  insidersBuild,
   basePath,
   debug
 }) {
-  let vscodeLink = insidersBuild ? "vscode-insiders" : "vscode";
+  let gkLink = "gk";
   if (remoteHost !== "") {
-    vscodeLink += `://vscode-remote/ssh-remote+${remoteHost}`;
+    gkLink += `://gk-remote/ssh-remote+${remoteHost}`;
   } else {
-    vscodeLink += "://file";
+    gkLink += "://file";
   }
   if (basePath[0] !== "/") {
-    vscodeLink += "/";
+    gkLink += "/";
   }
-  vscodeLink += `${basePath}/${repo}/${file}`;
+  gkLink += `${basePath}/${repo}/${file}`;
   if (isFolder) {
-    vscodeLink += "/";
+    gkLink += "/";
   }
   if (line) {
-    vscodeLink += `:${line}:1`;
+    gkLink += `:${line}:1`;
   }
   if (debug) {
-    console.log(`About to open link: ${vscodeLink}`);
+    console.log(`About to open link: ${gkLink}`);
   }
-  return vscodeLink;
+  return gkLink;
 }
 function isPR(linkUrl) {
   return PULL_REQUEST_PATH_REGEXP.test(linkUrl);
@@ -102,7 +115,7 @@ function injectedAlert(message) {
 function injectedWindowOpen(url) {
   window.open(url);
 }
-async function openInVscode({ linkUrl, selectionText, pageUrl }) {
+async function openInGk({ linkUrl, selectionText, pageUrl }) {
   let tab;
   try {
     tab = await getCurrentTab();
@@ -114,7 +127,7 @@ async function openInVscode({ linkUrl, selectionText, pageUrl }) {
   try {
     const options = await getOptions();
     const parsedLinkData = parseLink(linkUrl, selectionText, pageUrl);
-    const url = getVscodeLink(parsedLinkData, options);
+    const url = getGkLink(parsedLinkData, options);
     await chrome.scripting.executeScript(
       {
         target: { tabId: tab.id },
@@ -136,7 +149,7 @@ async function openInVscode({ linkUrl, selectionText, pageUrl }) {
     }
   }
 }
-var contextMenuId = "open-in-vscode-context-menu";
+var contextMenuId = "open-in-gk-context-menu";
 chrome.contextMenus.create({
   id: contextMenuId,
   title: "Open in VSCode",
@@ -146,9 +159,9 @@ chrome.contextMenus.onClicked.addListener(({ menuItemId, ...info }) => {
   if (menuItemId !== contextMenuId) {
     return;
   }
-  openInVscode(info);
+  openInGk(info);
 });
 chrome.action.onClicked.addListener(({ url }) => {
-  openInVscode({ linkUrl: url, pageUrl: url });
+  openInGk({ linkUrl: url, pageUrl: url });
 });
 //# sourceMappingURL=contextmenu.mjs.map

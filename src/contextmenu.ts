@@ -1,3 +1,44 @@
+import {
+  isRepoHome,
+  isRepoRoot,
+  isCommit,
+  isSingleTag,
+  utils,
+} from 'github-url-detection';
+
+import { getFirstCommit } from '.';
+
+const { getRepositoryInfo: getRepo } = utils;
+
+const isBranch = (url) => {
+  return !isRepoHome(url) && isRepoRoot(url);
+}
+
+const firstCommit = 'first_commit_here';
+
+const linkFormats = {
+  repo: `gitkraken://repolink/${firstCommit}?url=true`,
+  commit: (commit) => `gitkraken://repolink/${firstCommit}/commit/${commit}?url=true`,
+  branch: (branch) => `gitkraken://repolink/${firstCommit}/branch/${branch}?url=true`,
+  tag: (tag) => `gitkraken://repolink/${firstCommit}/tag/${tag}?url=true`,
+};
+
+const buildLink = (url: URL | Location | HTMLAnchorElement | undefined) => {
+  const { repo, commit, branch, tag } = linkFormats;
+  const info = getRepo(url ?? location);
+  let link = repo;
+  if (info && !isRepoHome(url)) {
+    const { path } = info;
+    const builder = (fn: (_: any) => string, splitter: string | RegExp) => {
+      return fn(path.split(splitter)[1].split(/\/|\?/)[0]);
+    };
+    if (isBranch(url)) link = builder(branch, '/tree/');
+    else if (isCommit(url)) link = builder(commit, /\/commit.*?\//);
+    else if (isSingleTag(url)) link = builder(tag, '/tag/');
+  }
+  return link;
+};
+
 const PULL_REQUEST_PATH_REGEXP = /.+\/([^/]+)\/(pull)\/[^/]+\/(.*)/;
 
 class OptionValidationError extends Error {
@@ -11,7 +52,6 @@ async function getOptions() {
     const options = await chrome.storage.sync.get({
         remoteHost: '',
         basePath: '',
-        insidersBuild: false,
         debug: false,
     });
 
@@ -22,46 +62,41 @@ async function getOptions() {
     return options;
 }
 
-function getVscodeLink({
+function getGkLink({
     repo, file, isFolder, line,
 }, {
-    remoteHost, insidersBuild, basePath, debug,
+    remoteHost, basePath, debug,
 }) {
-    let vscodeLink = insidersBuild
-        ? 'vscode-insiders'
-        : 'vscode';
+    let gkLink = 'gk';
 
-    // vscode://vscode-remote/ssh-remote+[host]/[path/to/file]:[line]
-    // OR
-    // vscode://file/[path/to/file]:[line]
     if (remoteHost !== '') {
-        vscodeLink += `://vscode-remote/ssh-remote+${remoteHost}`;
+        gkLink += `://gk-remote/ssh-remote+${remoteHost}`;
     } else {
-        vscodeLink += '://file';
+        gkLink += '://file';
     }
 
     // windows paths don't start with slash
     if (basePath[0] !== '/') {
-        vscodeLink += '/';
+        gkLink += '/';
     }
 
-    vscodeLink += `${basePath}/${repo}/${file}`;
+    gkLink += `${basePath}/${repo}/${file}`;
 
     // opening a folder and not a file
     if (isFolder) {
-        vscodeLink += '/';
+        gkLink += '/';
     }
 
     if (line) {
-        vscodeLink += `:${line}:1`;
+        gkLink += `:${line}:1`;
     }
 
     if (debug) {
         // eslint-disable-next-line no-console
-        console.log(`About to open link: ${vscodeLink}`);
+        console.log(`About to open link: ${gkLink}`);
     }
 
-    return vscodeLink;
+    return gkLink;
 }
 
 function isPR(linkUrl) {
@@ -131,7 +166,7 @@ function injectedWindowOpen(url) {
     window.open(url);
 }
 
-async function openInVscode({ linkUrl, selectionText, pageUrl }) {
+async function openInGk({ linkUrl, selectionText, pageUrl }) {
     let tab;
     try {
         tab = await getCurrentTab();
@@ -146,7 +181,7 @@ async function openInVscode({ linkUrl, selectionText, pageUrl }) {
     try {
         const options = await getOptions();
         const parsedLinkData = parseLink(linkUrl, selectionText, pageUrl);
-        const url = getVscodeLink(parsedLinkData, options);
+        const url = getGkLink(parsedLinkData, options);
         await chrome.scripting.executeScript(
             {
                 target: { tabId: tab.id },
@@ -170,7 +205,7 @@ async function openInVscode({ linkUrl, selectionText, pageUrl }) {
     }
 }
 
-const contextMenuId = 'open-in-vscode-context-menu';
+const contextMenuId = 'open-in-gk-context-menu';
 
 chrome.contextMenus.create({
     id: contextMenuId,
@@ -183,9 +218,9 @@ chrome.contextMenus.onClicked.addListener(({ menuItemId, ...info }) => {
         return;
     }
 
-    openInVscode(info);
+    openInGk(info);
 });
 
 chrome.action.onClicked.addListener((({ url }) => {
-    openInVscode({ linkUrl: url, pageUrl: url });
+    openInGk({ linkUrl: url, pageUrl: url });
 }));
