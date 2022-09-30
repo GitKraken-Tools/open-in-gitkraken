@@ -22,7 +22,7 @@
     "scripting"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "contextmenu.js"
   },
   "content_scripts": [
     {
